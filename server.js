@@ -34,12 +34,14 @@ app.post('/contact', jsonParser, (req, res) => {
         subject: 'New message from rcaseyx contact form',
         text: `${req.body.name} (${req.body.email}): ${req.body.message}`
     };
-    smtpTrans.sendMail(mailOpts, function (err, res) {
-        if (err) {
-          return res.status(500).json({ error: 'Internal Server Error' });
+    smtpTrans.sendMail(mailOpts, function (error, info) {
+        if (error) {
+            console.log(error);
+            res.status(500).send("Internal Server Error");
         } else {
-          return res.status(204).json({ message: 'Message sent successfully' });
+            res.status(204).send("Message sent successfully");
         }
+        smtpTrans.close();
     });
 });
 
