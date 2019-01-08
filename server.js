@@ -16,6 +16,10 @@ app.use(
 );
 app.use(morgan('common'));
 
+app.get('/contact', (req,res) => {
+    res.status(200).send("This is the API");
+});
+
 app.post('/contact', jsonParser, (req, res) => {
     let mailOpts;
     let smtpTrans;
@@ -39,15 +43,29 @@ app.post('/contact', jsonParser, (req, res) => {
             console.log(error);
             res.status(500).send("Internal Server Error");
         } else {
-            res.status(204).send("Message sent successfully");
+            res.status(201).send("Message sent successfully");
         }
         smtpTrans.close();
     });
 });
 
-app.listen(PORT, (err) => {
-    if (err) {
-        return console.log('Something went wrong', err);
-    }
-    console.log(`App is running on port ${PORT}`);
-});
+let server;
+
+function runServer(port = PORT) {
+    server = app.listen(port, (err) => {
+        if (err) {
+            return console.log('Something went wrong', err);
+        }
+        console.log(`App is running on port ${PORT}`);
+    });
+}
+
+function closeServer() {
+    server.close(err => console.log(err));
+}
+
+if (require.main === module) {
+    runServer();
+}
+
+module.exports = { app, runServer, closeServer };
